@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Калькулятор вартості тепла</title>
+<style>
+    /* Add CSS styles here */
+    body {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two equal columns */
+      gap: 20px; /* Gap between columns */
+    }
+    .calculator {
+      grid-column: 1 / 2; /* Span the first column */
+    }
+    .chart-container {
+      grid-column: 2 / 3; /* Span the second column */
+    }
+  </style>
+</head>
+<body>
+  <!-- Your calculator content -->
+  <div class="calculator">
+    <body>
+	<label for="month">Виберіть місяць: </label>
+	<br>
+	<select id="month">
+    <option value="-4.7">Січень</option>
+    <option value="-3.6">Лютий</option>
+	<option value="1">Березень</option>
+	<option value="9">Квітень</option>
+	<option value="8.1">Жовтень</option>
+	<option value="1.9">Листопад</option>
+	<option value="-2.5">Грудень</option>
+	<!-- Add options for other months here -->
+	</select>
+	<br><br>
+  
+  
+	<label for="temp">(А) Середня температура за місяць: </label>
+	<br>
+	<input type="number" id="temp">
+	<br><br>
+  
+  
+	<label for="days">(Б) Кількість днів (0-31): </label>
+	<br>
+	<input type="number" id="days">
+	<br><br>
+	
+	
+	<label for="area">Опалювальна площа (м2): </label>
+	<br>
+	<input type="number" id="area">
+	<br><br>
+
+
+	<button onclick="calculate()">Розрахувати вартість</button><br>
+
+	<p>Вартість опалення: <span id="result"></span></p><br><br><br>
+  
+	<label for="month_old">Виберіть минулий місяць: </label><br><br>
+	
+  <select id="month_old">
+	<option value="80.3188">2021-Листопад</option>
+    <option value="93.6635">2021-Грудень</option>
+	<option value="84.2175">2022-Січень</option>
+	<option value="78.5026">2022-Лютий</option>
+	<option value="66.3134">2022-Березень</option>
+	<option value="69.0288">2022-Жовтень</option>
+	<option value="77.7186">2022-Листопад</option>
+    <option value="80.0848">2022-Грудень</option>
+	<option value="95.3951">2023-Січень</option>
+	<option value="90.0550">2023-Лютий</option>
+	<option value="91.8702">2023-Березень</option>
+	<option value="35.9613">2023-Квітень</option>
+	<option value="36.5862">2023-Жовтень</option>
+	<option value="92.2635">2023-Листопад</option>
+    <!-- Add options for other months here -->
+  </select>
+   <br><br>
+   
+  <button onclick="calculate_old()">Показати за минулий рік</button><br><br>
+  
+  <p>Вартість опалення за минулий місяць: <span id="result_old"></span></p>
+  
+  <p><em>(Можлива похибка в розрахунку ~1.5%)</em></p><br>
+
+  <script>
+    // JavaScript code goes here
+    const ti_norm = 18; // Temperature inside the house according to standards
+    const Qho_norm = 0.107574648; // Normal house heating load (recalculated value)
+    const Gcal_cost = 1654.41; // Cost of one Gcal
+	const hours = 24;
+	const Ha = 3240.1;
+	const Fsg = 0.00059671532; //0.00059671532;
+
+    function calculate() {
+      const area = parseFloat(document.getElementById('area').value);
+      const days = parseFloat(document.getElementById('days').value);
+      const temp = parseFloat(document.getElementById('temp').value);
+      const monthIndex = document.getElementById('month').selectedIndex;
+	   if (isNaN(area) || isNaN(days) || isNaN(temp) || isNaN(monthIndex)) {
+        const errorElement = document.getElementById('result');
+		errorElement.innerText = 'Помилка: Будь ласка заповніть усі поля!.';
+        errorElement.style.color = 'red';
+        return;
+      }
+      const monthTemperatures = [-4.7, -3.6, 1, 9, 8.1, 1.9, -2.5];
+      const selectedMonthTemp = monthTemperatures[monthIndex];
+
+      const Hc = (((Qho_norm * (days * hours) * ((ti_norm - temp) / (ti_norm - selectedMonthTemp))) / Ha) * area ) * Gcal_cost + ((Fsg * area) * Gcal_cost);
+
+      document.getElementById('result').innerText = Hc.toFixed(2); 
+	  document.getElementById('result').style.color = 'black';
+    }
+	
+	function calculate_old() {
+	const area = parseFloat(document.getElementById('area').value);
+    const monthIndex = document.getElementById('month_old').selectedIndex;
+
+    if (isNaN(area) || isNaN(monthIndex)) {
+      const errorElement = document.getElementById('result_old');
+      errorElement.innerText = 'Заповніть поле "Опалювальна площа"';
+      errorElement.style.color = 'red';
+      return;
+    }
+
+    const monthOldGcal = [
+      80.3188, 93.6635, 84.2175, 78.5026, 66.3134, 69.0288, 77.7186, 80.0848,
+      95.3951, 90.055, 91.8702, 35.9613, 36.5862, 92.2635
+    ];
+    const selectedMonthGcal = monthOldGcal[monthIndex];
+
+    const H_old = ((selectedMonthGcal / Ha) * area) * Gcal_cost + ((Fsg * area) * Gcal_cost);
+
+    document.getElementById('result_old').innerText = H_old.toFixed(2);
+	document.getElementById('result_old').style.color = 'black';
+  }
+  </script>
+</body>
+  </div>
+
+  <!-- Embed the chart -->
+  <div class="chart-container">
+	<head>
+	<meta charset="UTF-8">
+	<title>Table with Cell Borders</title>
+	<style>
+		/* Add CSS styles here */
+		table {
+		border-collapse: collapse; /* This property removes the default spacing between table cells */
+		width: 100%;
+		}
+		th, td {
+		border: 1px solid #ddd; /* Adding a 1px solid border with a light gray color */
+		padding: 3px; /* Adding some padding to the cells for spacing */
+		text-align: left; /* Aligning text to the left */
+		height: 15px; /* Adjust the height to your desired value */
+		}
+		th {
+		background-color: #f2f2f2; /* Setting a background color for header cells */
+		}
+  </style>
+    <table class="oc-alternate-rows table" style="width: 100%;">
+    <thead>
+        <tr>
+            <th style="text-align: center;">Опалювальний період</th>
+            <th style="text-align: center;">(А) Середня температура за місяць, °С</th>
+            <th style="text-align: center;">(Б) Кількість днів</th>
+			<th style="text-align: center;">Гкал нараховано</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="text-align: center;">2018-Жовтень</td>
+            <td style="text-align: center;">10,7</td>
+            <td style="text-align: center;">17</td> <!-- за період 15.10-31.10  -->
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2018-Листопад</td>
+            <td style="text-align: center;">0,3</td>
+            <td style="text-align: center;">30</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2018-Грудень</td>
+            <td style="text-align: center;">-2,2</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2019-Січень</td>
+            <td style="text-align: center;">-4,5</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2019-Лютий</td>
+            <td style="text-align: center;">0,6</td>
+            <td style="text-align: center;">28</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2019-Березень</td>
+            <td style="text-align: center;">5,1</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2019-Квітень</td>
+            <td style="text-align: center;">7,58</td>
+            <td style="text-align: center;">6</td> <!-- за період 01.04-06.04  -->
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2019-Жовтень</td>
+            <td style="text-align: center;">7,11</td>
+            <td style="text-align: center;">4</td> <!-- за період 25.10-31.10  -->
+			<td style="text-align: center;">-</td>			
+        </tr>
+        <tr>
+            <td style="text-align: center;">2019-Листопад</td>
+            <td style="text-align: center;">4,6</td>
+            <td style="text-align: center;">18</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2019-Грудень</td>
+            <td style="text-align: center;">2,7</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2020-Січень</td>
+            <td style="text-align: center;">0,8</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2020-Лютий</td>
+            <td style="text-align: center;">2,5</td>
+            <td style="text-align: center;">29</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2020-Березень</td>
+            <td style="text-align: center;">6,5</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2020-Квітень</td>
+            <td style="text-align: center;">6,6</td>
+            <td style="text-align: center;">5</td> <!-- за період 01.04-05.04  -->
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2020-Жовтень</td>
+            <td style="text-align: center;">9,8</td>
+            <td style="text-align: center;">13</td> <!-- за період 17.10-31.10  -->
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2020-Листопад</td>
+            <td style="text-align: center;">3,8</td>
+            <td style="text-align: center;">26</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2020-Грудень</td>
+            <td style="text-align: center;">-0,6</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2021-Січень</td>
+            <td style="text-align: center;">-2,5</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2021-Лютий</td>
+            <td style="text-align: center;">-4,7</td>
+            <td style="text-align: center;">26</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2021-Березень</td>
+            <td style="text-align: center;">2,7</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2021-Квітень</td>
+            <td style="text-align: center;">6,6</td>
+            <td style="text-align: center;">12</td> <!-- за період 01.04-12.04  -->
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2021-Жовтень</td>
+            <td style="text-align: center;">7,3</td>
+            <td style="text-align: center;">8</td> <!-- за період 23.10-31.10  -->
+			<td style="text-align: center;">-</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2021-Листопад</td>
+            <td style="text-align: center;">4,8</td>
+            <td style="text-align: center;">30</td>
+			<td style="text-align: center;">80.3188</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2021-Грудень</td>
+            <td style="text-align: center;">-1,6</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">93.6635</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2022-Січень</td>
+            <td style="text-align: center;">-1,3</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">84.2175</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2022-Лютий</td>
+            <td style="text-align: center;">1,9</td>
+            <td style="text-align: center;">28</td>
+			<td style="text-align: center;">78.5026</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2022-Березень</td>
+            <td style="text-align: center;">1,8</td>
+            <td style="text-align: center;">19</td> <!-- за період 01.03-28.03  -->
+			<td style="text-align: center;">66.3134</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2022-Жовтень</td>
+            <td style="text-align: center;">9,8</td>
+            <td style="text-align: center;">11</td> <!-- за період 20.10-31.10  -->
+			<td style="text-align: center;">69.0288</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2022-Листопад</td>
+            <td style="text-align: center;">3,1</td>
+            <td style="text-align: center;">22</td>
+			<td style="text-align: center;">77.7186</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2022-Грудень</td>
+            <td style="text-align: center;">-0,7</td>
+            <td style="text-align: center;">23</td>
+			<td style="text-align: center;">80.0848</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2023-Січень</td>
+            <td style="text-align: center;">-0,3</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">95.3951</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2023-Лютий</td>
+            <td style="text-align: center;">-0,2</td>
+            <td style="text-align: center;">28</td>
+			<td style="text-align: center;">90.055</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2023-Березень</td>
+            <td style="text-align: center;">4,8</td>
+            <td style="text-align: center;">31</td>
+			<td style="text-align: center;">91.8702</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2023-Квітень</td>
+            <td style="text-align: center;">7,4</td>
+            <td style="text-align: center;">8</td> <!-- за період 01.04-08.04  -->
+			<td style="text-align: center;">35.9613</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2023-Жовтень</td>
+            <td style="text-align: center;">10,7</td>
+            <td style="text-align: center;">13</td> <!-- за період 16.10-31.10  -->
+			<td style="text-align: center;">36.5862</td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">2023-Листопад</td>
+            <td style="text-align: center;">4,1</td>
+            <td style="text-align: center;">28</td>
+			<td style="text-align: center;">92.2635</td>
+        </tr>
+    </tbody>
+</table>
+  </div>
+</body>
+</html>
