@@ -23,10 +23,9 @@
   <div class="calculator">
     <body>
 	<p><strong>Вартість згідно правильної формули</em></strong><br><br>
-		
 	<label for="month">Виберіть місяць: </label>
 	<br>
-	<select id="month">
+	<select id="month">	
    	<option value="-4.7">Січень</option>
    	<option value="-3.6">Лютий</option>
 	<option value="1">Березень</option>
@@ -60,7 +59,8 @@
 	<button onclick="calculate()"><strong>Розрахувати вартість</strong></button><br>
 
 	<p>Вартість опалення: <span id="result"></span></p><br><br><br>
-  
+	    
+  	<p><strong>Вартість опалення за минулі місяці</em></strong><br><br>
 	<label for="month_old">Виберіть минулий місяць: </label><br><br>
 	
   <select id="month_old">
@@ -81,6 +81,7 @@
     <!-- Add options for other months here -->
   </select>
    <br><br>
+
    
   <button onclick="calculate_old()"><strong>Розрахувати вартість</strong></button><br><br>
   
@@ -90,28 +91,26 @@
 
   <script>
     // JavaScript code goes here
-    const ti_norm = 18; // Temperature inside the house according to standards
-    const Qho_norm = 0.107574648; // Normal house heating load (recalculated value)
-    const Gcal_cost = 1654.41; // Cost of one Gcal
+	const ti_norm = 18; // Temperature inside the house according to standards
+	const Qho_norm = 0.107574648; // Normal house heating load (recalculated value)
+	const Gcal_cost = 1654.41; // Cost of one Gcal
 	const hours = 24;
 	const Ha = 3240.1;
 	const Fsg = 0.00059671532; //0.00059671532;
-
-    function calculate() {
+	  
+function calculate() {
       const area = parseFloat(document.getElementById('area').value);
       const days = parseFloat(document.getElementById('days').value);
       const temp = parseFloat(document.getElementById('temp').value);
-      const monthIndex = document.getElementById('month').selectedIndex;
+      const monthIndex = document.getElementById('month_old').selectedIndex;
 	   if (isNaN(area) || isNaN(days) || isNaN(temp) || isNaN(monthIndex)) {
         const errorElement = document.getElementById('result');
 		errorElement.innerText = 'Помилка: Будь ласка заповніть усі поля!.';
         errorElement.style.color = 'red';
         return;
       }
-      const monthTemperatures = [-4.7, -3.6, 1, 9, 8.1, 1.9, -2.5];
-      const selectedMonthTemp = monthTemperatures[monthIndex];
 
-      const Hc = (((Qho_norm * (days * hours) * ((ti_norm - temp) / (ti_norm - selectedMonthTemp))) / Ha) * area ) * Gcal_cost + ((Fsg * area) * Gcal_cost);
+      const Hc = (((Qho_norm * (days * hours) * ((ti_norm - temp) / (ti_norm - MonthTemp))) / Ha) * area ) * Gcal_cost + ((Fsg * area) * Gcal_cost);
 
       document.getElementById('result').innerText = Hc.toFixed(2)грн.; 
 	  document.getElementById('result').style.color = 'black';
@@ -139,6 +138,45 @@
     document.getElementById('result_old').innerText = H_old.toFixed(2)грн.;
 	document.getElementById('result_old').style.color = 'black';
   }
+	  function fillValuesForOldMonth() {
+    const monthSelect = document.getElementById('month_old');
+    const areaInput = document.getElementById('area');
+    const daysInput = document.getElementById('days');
+    const tempInput = document.getElementById('temp');
+
+    const monthOldData = {
+        "80.3188": { days: 30, temp: 1.9 }, 	// 2021-Листопад
+        "93.6635": { days: 31, temp: -2.5 }, 	// 2021-Грудень
+        "84.2175": { days: 31, temp: -4.7 }, 	// 2022-Січень
+        "78.5026": { days: 28, temp: -3.6 }, 	// 2022-Лютий
+        "66.3134": { days: 19, temp: 1 },  	// 2022-Березень
+        "69.0288": { days: 11, temp: 8.1 },  	// 2022-Жовтень
+        "77.7186": { days: 22, temp: 1.9 }, 	// 2022-Листопад
+        "80.0848": { days: 23, temp: -2.5 }, 	// 2022-Грудень
+        "95.3951": { days: 31, temp: -4.7 }, 	// 2023-Січень
+        "90.0550": { days: 28, temp: -3.6 }, 	// 2023-Лютий
+        "91.8702": { days: 31, temp: 1 },  	// 2023-Березень
+        "35.9613": { days: 8, temp: 9 },  	// 2023-Квітень
+        "36.5862": { days: 13, temp: 8.1 }, 	// 2023-Жовтень
+        "92.2635": { days: 28, temp: 1.9 },  	// 2023-Листопад
+        // Add other months here
+    };
+
+    const selectedMonth = monthSelect.value;
+    const data = monthOldData[selectedMonth];
+
+    if (data) {
+        areaInput.value = 'YOUR_AREA_VALUE'; // Replace with your area value
+        daysInput.value = data.days;
+        tempInput.value = data.temp;
+    }
+}
+
+// Call the function when the dropdown value changes
+document.getElementById('month_old').addEventListener('change', fillValuesForOldMonth);
+
+// Initially call the function to fill values for the default selected month
+fillValuesForOldMonth();
   </script>
 </body>
   </div>
