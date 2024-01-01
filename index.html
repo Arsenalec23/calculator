@@ -22,11 +22,12 @@
   <!-- Your calculator content -->
   <div class="calculator">
     <body>
+	<p><strong>Вартість згідно правильної формули</em></strong><br>
 	<label for="month">Виберіть місяць: </label>
 	<br>
 	<select id="month">
-    <option value="-4.7">Січень</option>
-    <option value="-3.6">Лютий</option>
+   	<option value="-4.7">Січень</option>
+   	<option value="-3.6">Лютий</option>
 	<option value="1">Березень</option>
 	<option value="9">Квітень</option>
 	<option value="8.1">Жовтень</option>
@@ -39,23 +40,23 @@
   
 	<label for="temp">(А) Середня температура за місяць: </label>
 	<br>
-	<input type="number" id="temp">
+	<input type="number" id="temp" min="-30" max="30">
 	<br><br>
   
   
-	<label for="days">(Б) Кількість днів (0-31): </label>
+	<label for="days">(Б) Кількість днів: </label>
 	<br>
-	<input type="number" id="days">
+	<input type="number" id="days" min="0" max="31">
 	<br><br>
 	
 	
 	<label for="area">Опалювальна площа (м2): </label>
 	<br>
-	<input type="number" id="area">
+	<input type="number" id="area" min="0" max="4000">
 	<br><br>
 
 
-	<button onclick="calculate()">Розрахувати вартість</button><br>
+	<button onclick="calculate()"><strong>Розрахувати вартість</strong></button><br>
 
 	<p>Вартість опалення: <span id="result"></span></p><br><br><br>
   
@@ -63,13 +64,13 @@
 	
   <select id="month_old">
 	<option value="80.3188">2021-Листопад</option>
-    <option value="93.6635">2021-Грудень</option>
+    	<option value="93.6635">2021-Грудень</option>
 	<option value="84.2175">2022-Січень</option>
 	<option value="78.5026">2022-Лютий</option>
 	<option value="66.3134">2022-Березень</option>
 	<option value="69.0288">2022-Жовтень</option>
 	<option value="77.7186">2022-Листопад</option>
-    <option value="80.0848">2022-Грудень</option>
+   	<option value="80.0848">2022-Грудень</option>
 	<option value="95.3951">2023-Січень</option>
 	<option value="90.0550">2023-Лютий</option>
 	<option value="91.8702">2023-Березень</option>
@@ -80,7 +81,7 @@
   </select>
    <br><br>
    
-  <button onclick="calculate_old()">Показати за минулий рік</button><br><br>
+  <button onclick="calculate_old()"><strong>Розрахувати вартість</strong></button><br><br>
   
   <p>Вартість опалення за минулий місяць: <span id="result_old"></span></p>
   
@@ -111,7 +112,7 @@
 
       const Hc = (((Qho_norm * (days * hours) * ((ti_norm - temp) / (ti_norm - selectedMonthTemp))) / Ha) * area ) * Gcal_cost + ((Fsg * area) * Gcal_cost);
 
-      document.getElementById('result').innerText = Hc.toFixed(2); 
+      document.getElementById('result').innerText = Hc.toFixed(2)грн.; 
 	  document.getElementById('result').style.color = 'black';
     }
 	
@@ -134,7 +135,7 @@
 
     const H_old = ((selectedMonthGcal / Ha) * area) * Gcal_cost + ((Fsg * area) * Gcal_cost);
 
-    document.getElementById('result_old').innerText = H_old.toFixed(2);
+    document.getElementById('result_old').innerText = H_old.toFixed(2)грн.;
 	document.getElementById('result_old').style.color = 'black';
   }
   </script>
